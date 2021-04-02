@@ -96,6 +96,12 @@ fi
 GRPC_ADDRESS=$(echo "$CFG_grpc_laddr" | sed 's/tcp\?:\/\///')
 CDHelper text lineswap --insert="GRPC_ADDRESS=\"$GRPC_ADDRESS\"" --prefix="GRPC_ADDRESS=" --path=$ETC_PROFILE --append-if-found-not=True
 
+# Enable prometheus monitoring
+if [ "${NODE_TYPE,,}" == "validator" ] && [ ! -z "$CFG_prometheus" ] ; then
+    CDHelper text lineswap --insert="prometheus = \"$CFG_prometheus\"" --prefix="prometheus =" --path=$CFG
+    CDHelper text lineswap --insert="prometheus_listen_addr = \"$CFG_prometheus_listen_addr\"" --prefix="prometheus_listen_addr =" --path=$CFG
+fi
+
 echo "INFO: Starting state file configuration..."
 STATE_HEIGHT=$(cat $LOCAL_STATE | jq -rc '.height' || echo "0")
 
